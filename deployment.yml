@@ -13,8 +13,10 @@ spec:
         app: my-app
     spec:
       containers:
-      - name: hasan05
-        image: latest
+      - name: webserver
+        image: "${ECR_REGISTRY}/${APP_REPO_NAME}:latest"
+        ports:
+        - containerPort: 80
 
 ...
 
