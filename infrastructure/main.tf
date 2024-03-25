@@ -124,36 +124,10 @@ resource "aws_security_group" "petclinic-kube-master-sg" {
   }
 }
 
-resource "aws_iam_role" "petclinic-master-server-s3-role" {
-  name               = "petclinic-master-server-role"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "ec2.amazonaws.com"
-      },
-      "Effect": "Allow",
-      "Sid": ""
-    }
-  ]
-}
-EOF
-
-  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"]
-}
-
-resource "aws_iam_instance_profile" "petclinic-master-server-profile" {
-  name = "petclinic-master-server-profile"
-  role = aws_iam_role.petclinic-master-server-s3-role.name
-}
 
 resource "aws_instance" "kube-master" {
     ami = "ami-07d9b9ddc6cd8dd30"
-    instance_type = "t3a.medium"
-    iam_instance_profile = aws_iam_instance_profile.petclinic-master-server-profile.name
+    instance_type = "t2.micro"
     vpc_security_group_ids = [aws_security_group.petclinic-kube-master-sg.id, aws_security_group.petclinic-mutual-sg.id]
     key_name = "clarus"
     subnet_id = "subnet-012b73e2614cfbe2b"  # select own subnet_id of us-east-1a
@@ -169,7 +143,7 @@ resource "aws_instance" "kube-master" {
 
 resource "aws_instance" "worker-1" {
     ami = "ami-07d9b9ddc6cd8dd30"
-    instance_type = "t3a.medium"
+    instance_type = "t2.micro"
     vpc_security_group_ids = [aws_security_group.petclinic-kube-worker-sg.id, aws_security_group.petclinic-mutual-sg.id]
     key_name = "clarus"
     subnet_id = "subnet-012b73e2614cfbe2b"  # select own subnet_id of us-east-1a
