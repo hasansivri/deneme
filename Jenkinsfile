@@ -10,15 +10,21 @@ pipeline {
     stages {
         stage('Build Docker Image') {
             steps {
-                sh 'docker build --force-rm -t "$ECR_REGISTRY/$APP_REPO_NAME:latest" .'
-                sh 'docker image ls'
+                script {
+                    echo 'Building Docker image'
+                    sh 'docker build --force-rm -t "$ECR_REGISTRY/$APP_REPO_NAME:latest" .'
+                    sh 'docker image ls'
+                }
             }
         }
         
         stage('Push Image to ECR Repo') {
             steps {
-                sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$ECR_REGISTRY"'
-                sh 'docker push "$ECR_REGISTRY/$APP_REPO_NAME:latest"'
+                script {
+                    echo 'Pushing Docker image to ECR'
+                    sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$ECR_REGISTRY"'
+                    sh 'docker push "$ECR_REGISTRY/$APP_REPO_NAME:latest"'
+                }
             }
         }
         
@@ -53,6 +59,15 @@ pipeline {
                     withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
                         sh 'kubectl apply -f hpa.yml'
                     }
+                }
+            }
+        }
+        
+        stage('Destroy Infrastructure') {
+            steps {
+                echo 'Destroying infrastructure using Terraform'
+                dir('infrastructure') {
+                    sh 'terraform destroy -auto-approve -no-color'
                 }
             }
         }
