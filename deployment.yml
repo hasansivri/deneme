@@ -15,3 +15,17 @@ spec:
       containers:
       - name: hasan05
         image: latest
+
+...
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: my-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
