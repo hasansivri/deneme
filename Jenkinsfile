@@ -4,7 +4,7 @@ pipeline {
     environment {
         ECR_REGISTRY = "877540899436.dkr.ecr.us-east-1.amazonaws.com"
         APP_REPO_NAME = "hasan05/to-do-webapp"
-        KUBE_MASTER_IP = "<Kubernetes_Master_IP>"
+        KUBECONFIG = "<path_to_your_kubeconfig_file>"
     }
     
     stages {
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying to Kubernetes'
-                    withEnv(["KUBECONFIG=${KUBE_CONFIG}"]) {
+                    withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
                         sh 'kubectl apply -f deployment.yml -f service.yml'
                     }
                 }
@@ -50,7 +50,7 @@ pipeline {
             steps {
                 script {
                     echo 'Configuring HPA'
-                    withEnv(["KUBECONFIG=${KUBE_CONFIG}"]) {
+                    withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
                         sh 'kubectl apply -f hpa.yml'
                     }
                 }
