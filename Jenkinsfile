@@ -22,12 +22,15 @@
     
         stage('Deploy to Kubernetes') {
             steps {
-                // Kubernetes Deployment ve Service YAML dosyalarını uygula
                 script {
-                    sh 'kubectl apply -f deployment.yml -f service.yml'
+                    // Kubernetes Deployment YAML dosyasını uygulama adımı
+                    withKubeConfig([credentialsId: 'kube-config', serverUrl: 'https://54.242.69.228']) {
+                        sh 'kubectl apply -f deployment.yml -f service.yml'
+                    }
                 }
             }
-        }
+        }    
+    
         stage('Configure HPA') {
             steps {
                 // HorizontalPodAutoscaler YAML dosyasını uygula
