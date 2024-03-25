@@ -163,7 +163,7 @@ output kube-master-ip {
   description = "public ip of the kube-master"
 }
 
-output worker-1-ip {
+output worker-ip {
   value       = aws_instance.worker.public_ip
   sensitive   = false
   description = "public ip of the worker"
