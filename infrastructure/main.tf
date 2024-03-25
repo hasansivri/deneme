@@ -3,15 +3,15 @@ provider "aws" {
 }
 
 variable "sec-gr-mutual" {
-  default = "petclinic-k8s-mutual-sec-group-1"
+  default = "petclinic-k8s-mutual-sec-group"
 }
 
 variable "sec-gr-k8s-master" {
-  default = "petclinic-k8s-master-sec-group-1"
+  default = "petclinic-k8s-master-sec-group"
 }
 
 variable "sec-gr-k8s-worker" {
-  default = "petclinic-k8s-worker-sec-group-1"
+  default = "petclinic-k8s-worker-sec-group"
 }
 
 data "aws_vpc" "name" {
@@ -23,26 +23,30 @@ resource "aws_security_group" "petclinic-mutual-sg" {
   vpc_id = data.aws_vpc.name.id
 
   ingress {
-    protocol = "tcp"
-    from_port = 10250
-    to_port = 10250
-    self = true
+    from_port   = 22
+    protocol    = "tcp"
+    to_port     = 22
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 5000
+    protocol    = "tcp"
+    to_port     = 5000
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 3000
+    protocol    = "tcp"
+    to_port     = 3000
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-    ingress {
-    protocol = "udp"
-    from_port = 8472
-    to_port = 8472
-    self = true
+  egress {
+    from_port   = 0
+    protocol    = -1
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
   }
-
-    ingress {
-    protocol = "tcp"
-    from_port = 2379
-    to_port = 2380
-    self = true
-  }
-
 }
 
 resource "aws_security_group" "petclinic-kube-worker-sg" {
@@ -51,19 +55,23 @@ resource "aws_security_group" "petclinic-kube-worker-sg" {
 
 
   ingress {
-    protocol = "tcp"
-    from_port = 30000
-    to_port = 32767
+    from_port   = 22
+    protocol    = "tcp"
+    to_port     = 22
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   ingress {
-    protocol = "tcp"
-    from_port = 22
-    to_port = 22
+    from_port   = 5000
+    protocol    = "tcp"
+    to_port     = 5000
     cidr_blocks = ["0.0.0.0/0"]
   }
-
+  ingress {
+    from_port   = 3000
+    protocol    = "tcp"
+    to_port     = 3000
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   egress{
     protocol = "-1"
     from_port = 0
@@ -80,37 +88,27 @@ resource "aws_security_group" "petclinic-kube-master-sg" {
   vpc_id = data.aws_vpc.name.id
 
   ingress {
-    protocol = "tcp"
-    from_port = 22
-    to_port = 22
+    from_port   = 22
+    protocol    = "tcp"
+    to_port     = 22
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   ingress {
-    protocol = "tcp"
-    from_port = 6443
-    to_port = 6443
+    from_port   = 5000
+    protocol    = "tcp"
+    to_port     = 5000
     cidr_blocks = ["0.0.0.0/0"]
   }
-
   ingress {
-    protocol = "tcp"
-    from_port = 10257
-    to_port = 10257
-    self = true
+    from_port   = 3000
+    protocol    = "tcp"
+    to_port     = 3000
+    cidr_blocks = ["0.0.0.0/0"]
   }
-
   ingress {
-    protocol = "tcp"
-    from_port = 10259
-    to_port = 10259
-    self = true
-  }
-
-  ingress {
-    protocol = "tcp"
-    from_port = 30000
-    to_port = 32767
+    from_port   = 5432
+    protocol    = "tcp"
+    to_port     = 5432
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -185,22 +183,6 @@ resource "aws_instance" "worker-1" {
     }
 }
 
-resource "aws_instance" "worker-2" {
-    ami = "ami-07d9b9ddc6cd8dd30"
-    instance_type = "t3a.medium"
-    vpc_security_group_ids = [aws_security_group.petclinic-kube-worker-sg.id, aws_security_group.petclinic-mutual-sg.id]
-    key_name = "clarus"
-    subnet_id = "subnet-012b73e2614cfbe2b"  # select own subnet_id of us-east-1a
-    availability_zone = "us-east-1a"
-    tags = {
-        Name = "worker-2"
-        Project = "tera-kube-ans"
-        Role = "worker"
-        Id = "2"
-        environment = "dev"
-    }
-}
-
 output kube-master-ip {
   value       = aws_instance.kube-master.public_ip
   sensitive   = false
@@ -211,10 +193,4 @@ output worker-1-ip {
   value       = aws_instance.worker-1.public_ip
   sensitive   = false
   description = "public ip of the worker-1"
-}
-
-output worker-2-ip {
-  value       = aws_instance.worker-2.public_ip
-  sensitive   = false
-  description = "public ip of the worker-2"
 }
