@@ -2,7 +2,8 @@ pipeline {
     agent any
     environment {
         ECR_REGISTRY = "877540899436.dkr.ecr.us-east-1.amazonaws.com"
-        APP_REPO_NAME= "hasan05/to-do-webapp"
+        APP_REPO_NAME = "hasan05/to-do-webapp"
+        KUBE_MASTER_IP = "<Kubernetes_Master_IP>"
     }
     stages {
         stage('Build Docker Image') {
@@ -17,21 +18,32 @@ pipeline {
                 sh 'docker push "$ECR_REGISTRY/$APP_REPO_NAME:latest"'
             }
         }
+        stage('Create Infrastructure') {
+            steps {
+                echo 'Creating infrastructure using Terraform'
+                sh """
+                    cd infrastructure
+                    sed -i "s/clarus/$ANS_KEYPAIR/g" main.tf
+                    terraform init
+                    terraform apply -auto-approve -no-color
+                """
+            }
+        }
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    // Kubernetes Deployment ve Service YAML dosyalarını uygula
-                    withKubeConfig([credentialsId: 'kube-config', serverUrl: 'https://54.242.69.228']) {
+                    echo 'Deploying to Kubernetes'
+                    withKubeConfig([credentialsId: 'kube-config', serverUrl: "https://$KUBE_MASTER_IP"]) {
                         sh 'kubectl apply -f deployment.yml -f service.yml'
                     }
                 }
             }
-        }   
+        }
         stage('Configure HPA') {
             steps {
                 script {
-                    // HorizontalPodAutoscaler YAML dosyasını uygula
-                    withKubeConfig([credentialsId: 'kube-config', serverUrl: 'https://54.242.69.228']) {
+                    echo 'Configuring HPA'
+                    withKubeConfig([credentialsId: 'kube-config', serverUrl: "https://$KUBE_MASTER_IP"]) {
                         sh 'kubectl apply -f hpa.yml'
                     }
                 }
