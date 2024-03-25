@@ -20,23 +20,23 @@
           
         }
     
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    // Kubernetes Deployment YAML dosyasını uygulama adımı
-                    withKubeConfig([credentialsId: 'kube-config', serverUrl: 'https://54.242.69.228']) {
-                        sh 'kubectl apply -f deployment.yml -f service.yml'
-                    }
-                }
+ stage('Deploy to Kubernetes') {
+    steps {
+        script {
+            // Kubernetes Deployment ve Service YAML dosyalarını uygula
+            withKubeConfig([credentialsId: 'kube-config', serverUrl: 'https://54.242.69.228']) {
+                sh 'kubectl apply -f deployment.yml '
             }
-        }    
+        }
+    }
+}    
     
-        stage('Configure HPA') {
-            steps {
-                // HorizontalPodAutoscaler YAML dosyasını uygula
-                script {
-                    sh 'kubectl apply -f hpa.yml'
-                }
+stage('Configure HPA') {
+    steps {
+        script {
+            // HorizontalPodAutoscaler YAML dosyasını uygula
+            withKubeConfig([credentialsId: 'kube-config', serverUrl: 'https://54.242.69.228']) {
+                sh 'kubectl apply -f hpa.yml'
             }
         }
     }
