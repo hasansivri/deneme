@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying to Kubernetes'
-                    withKubeConfig([credentialsId: 'kube-config', serverUrl: "https://$KUBE_MASTER_IP"]) {
+                    withEnv(["KUBECONFIG=${KUBE_CONFIG}"]) {
                         sh 'kubectl apply -f deployment.yml -f service.yml'
                     }
                 }
@@ -50,7 +50,7 @@ pipeline {
             steps {
                 script {
                     echo 'Configuring HPA'
-                    withKubeConfig([credentialsId: 'kube-config', serverUrl: "https://$KUBE_MASTER_IP"]) {
+                    withEnv(["KUBECONFIG=${KUBE_CONFIG}"]) {
                         sh 'kubectl apply -f hpa.yml'
                     }
                 }
