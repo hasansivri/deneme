@@ -57,7 +57,7 @@ pipeline {
                 script {
                     echo 'Configuring HPA'
                     withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
-                        sh 'kubectl apply -f hpa.yml'
+                        sh 'kubectl apply -f hpa-web.yaml'
                     }
                 }
             }
