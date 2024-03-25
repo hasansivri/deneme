@@ -14,4 +14,4 @@ spec:
     spec:
       containers:
       - name: hasan05
-        image: hasan05/my-image:tag
+        image: latest
