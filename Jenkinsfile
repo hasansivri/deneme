@@ -46,7 +46,8 @@ pipeline {
                 script {
                     echo 'Deploying to Kubernetes'
                     withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
-                        sh 'kubectl apply -f deployment.yml -f service.yml'
+                        sh 'kubectl apply -f deployment.yml -f '
+                        sh 'kubectl apply -f service.yml '
                     }
                 }
             }
