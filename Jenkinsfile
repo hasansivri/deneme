@@ -10,14 +10,14 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image'
-                sh "docker build -t $ECR_REGISTRY/microservice:latest $DOCKERFILE_DIR"
+                sh "docker build -t $ECR_REGISTRY/hasan05/to-do-webapp $DOCKERFILE_DIR"
             }
         }
         
         stage('Push Image to ECR') {
             steps {
                 echo 'Pushing Docker image to ECR'
-                sh "docker push $ECR_REGISTRY/microservice:latest"
+                sh "docker push $ECR_REGISTRY/hasan05/to-do-webapp"
             }
         }
         
