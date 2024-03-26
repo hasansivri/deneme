@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: microservice
-        image: your-ecr-registry-url/microservice:latest
+        image: 877540899436.dkr.ecr.us-east-1.amazonaws.com/hasan05/to-do-webapp
         resources:
           requests:
             cpu: 100m
