@@ -8,14 +8,7 @@ pipeline {
         DOCKERFILE_DIR = "/home/ec2-user/deneme/clarusshop" // Dockerfile'ın bulunduğu dizini buraya belirtin
     }
     
-    stages {
-        stage('Set Permissions') {
-            steps {
-                echo 'Setting permissions for Dockerfile directory'
-                sh 'chmod -R 755 /home/ec2-user/deneme/clarusshop'
-            }
-        }
-        
+       
         stage('Build Docker Image') {
             steps {
                 script {
