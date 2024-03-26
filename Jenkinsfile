@@ -5,6 +5,7 @@ pipeline {
         ECR_REGISTRY = "877540899436.dkr.ecr.us-east-1.amazonaws.com"
         APP_REPO_NAME = "hasan05/to-do-webapp1"
         KUBECONFIG = "/path/to/kubeconfig"
+        DOCKERFILE_DIR = "/home/ec2-user/deneme/clarusshop" // Dockerfile'ın bulunduğu dizini buraya belirtin
     }
     
     stages {
@@ -12,7 +13,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image'
-                    sh 'docker build -t "${APP_REPO_NAME}:latest" .'
+                    sh "docker build -t ${APP_REPO_NAME}:latest ${DOCKERFILE_DIR}"
                     sh 'docker image ls'
                 }
             }
@@ -23,8 +24,8 @@ pipeline {
                 script {
                     echo 'Pushing Docker image to ECR'
                     sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$ECR_REGISTRY"'
-                    sh 'docker tag "${APP_REPO_NAME}:latest" "${ECR_REGISTRY}/${APP_REPO_NAME}:latest"'
-                    sh 'docker push "${ECR_REGISTRY}/${APP_REPO_NAME}:latest"'
+                    sh "docker tag ${APP_REPO_NAME}:latest ${ECR_REGISTRY}/${APP_REPO_NAME}:latest"
+                    sh "docker push ${ECR_REGISTRY}/${APP_REPO_NAME}:latest"
                 }
             }
         }
