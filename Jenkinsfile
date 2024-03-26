@@ -9,6 +9,13 @@ pipeline {
     }
     
     stages {
+        stage('Set Permissions') {
+            steps {
+                echo 'Setting permissions for Dockerfile directory'
+                sh 'sudo chmod -R 755 /home/ec2-user/deneme/clarusshop'
+            }
+        }
+        
         stage('Build Docker Image') {
             steps {
                 script {
