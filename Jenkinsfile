@@ -4,7 +4,7 @@ pipeline {
     environment {
         ECR_REGISTRY = "877540899436.dkr.ecr.us-east-1.amazonaws.com"
         APP_REPO_NAME = "hasan05/to-do-webapp"
-        KUBECONFIG = "<path_to_your_kubeconfig_file>"
+        KUBECONFIG = "<3.87.231.204>"
     }
     
     stages {
