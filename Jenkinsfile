@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         ECR_REGISTRY = "877540899436.dkr.ecr.us-east-1.amazonaws.com"
-        DOCKERFILE_DIR = "/home/ec2-user/.docker"
+        DOCKERFILE_DIR = "/home/ec2-user/deneme"
     }
     
     stages {
