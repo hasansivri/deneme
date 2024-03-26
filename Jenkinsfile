@@ -12,7 +12,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image'
-                    sh 'docker build --force-rm -t "${ECR_REGISTRY}/${APP_REPO_NAME}:latest" .'
+                    sh 'docker build -t "${APP_REPO_NAME}:latest" .'
                     sh 'docker image ls'
                 }
             }
@@ -23,7 +23,8 @@ pipeline {
                 script {
                     echo 'Pushing Docker image to ECR'
                     sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$ECR_REGISTRY"'
-                    sh 'docker push "$ECR_REGISTRY/$APP_REPO_NAME:latest"'
+                    sh 'docker tag "${APP_REPO_NAME}:latest" "${ECR_REGISTRY}/${APP_REPO_NAME}:latest"'
+                    sh 'docker push "${ECR_REGISTRY}/${APP_REPO_NAME}:latest"'
                 }
             }
         }
@@ -36,7 +37,6 @@ pipeline {
                         sed -i "s/clarus/$ANS_KEYPAIR/g" main.tf
                         terraform init
                         terraform apply -auto-approve -no-color
-                       
                     '''
                 }
             }
