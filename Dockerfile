@@ -1,14 +1,7 @@
-# Dockerfile for Node.js microservice
-FROM node:14-alpine
-
+FROM node:12-alpine
 WORKDIR /app
-
-COPY package*.json ./
-RUN npm install
-
 COPY . .
-
+RUN yarn install --production
 EXPOSE 3000
-
-CMD [ "node", "app.js" ]
+CMD ["node", "/app/src/index.js"]
 
