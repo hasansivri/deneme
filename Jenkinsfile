@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         ECR_REGISTRY = "877540899436.dkr.ecr.us-east-1.amazonaws.com"
-        APP_REPO_NAME = "hasan05/to-do-webapp"
+        APP_REPO_NAME = "hasan05/to-do-webapp1"
         KUBECONFIG = "/path/to/kubeconfig"
     }
     
