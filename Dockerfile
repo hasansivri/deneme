@@ -2,7 +2,8 @@
 FROM nginx
 
 # Özel yapılandırma dosyasını kopyala
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY ../configs/nginx.conf /etc/nginx/nginx.conf
+
 
 # Opsiyonel olarak, statik web içeriğini kopyala (örneğin, html dosyaları)
 # COPY static-html-directory /usr/share/nginx/html
