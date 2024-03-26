@@ -4,7 +4,7 @@ pipeline {
     environment {
         ECR_REGISTRY = "877540899436.dkr.ecr.us-east-1.amazonaws.com"
         APP_REPO_NAME = "hasan05/to-do-webapp"
-        KUBECONFIG = "<path_to_your_kubeconfig_file>"
+        KUBECONFIG = "/path/to/kubeconfig"
     }
     
     stages {
@@ -46,8 +46,8 @@ pipeline {
                 script {
                     echo 'Deploying to Kubernetes'
                     withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
-                        sh 'kubectl apply -f deployment.yml --validate=false'
-                        sh 'kubectl apply -f service.yml --validate=false'
+                        sh 'kubectl apply -f deployment.yml'
+                        sh 'kubectl apply -f service.yml'
                     }
                 }
             }
@@ -58,7 +58,7 @@ pipeline {
                 script {
                     echo 'Configuring HPA'
                     withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
-                        sh 'kubectl apply -f hpa-web.yaml --validate=false'
+                        sh 'kubectl apply -f hpa-web.yaml'
                     }
                 }
             }
