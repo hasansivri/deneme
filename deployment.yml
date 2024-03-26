@@ -1,19 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myapp-deployment
+  name: microservice-deployment
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: my-app
+      app: microservice
   template:
     metadata:
       labels:
-        app: my-app
+        app: microservice
     spec:
       containers:
-      - name: webserver
-        image: "${ECR_REGISTRY}/${APP_REPO_NAME}:latest"
-        ports:
-        - containerPort: 80
+      - name: microservice
+        image: your-ecr-registry-url/microservice:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi

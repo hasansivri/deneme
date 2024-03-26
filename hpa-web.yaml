@@ -1,13 +1,13 @@
-apiVersion: autoscaling/v2
+apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: myapp-deployment
+  name: microservice-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: myapp-deployment
-  minReplicas: 3
+    name: microservice-deployment
+  minReplicas: 2
   maxReplicas: 5
   metrics:
   - type: Resource

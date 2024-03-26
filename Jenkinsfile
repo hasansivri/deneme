@@ -3,75 +3,36 @@ pipeline {
     
     environment {
         ECR_REGISTRY = "877540899436.dkr.ecr.us-east-1.amazonaws.com"
-        APP_REPO_NAME = "hasan05/to-do-webapp1"
-        KUBECONFIG = "/path/to/kubeconfig"
-        DOCKERFILE_DIR = "/home/ec2-user/deneme/clarusshop" // Dockerfile'ın bulunduğu dizini buraya belirtin
+        DOCKERFILE_DIR = "/path/to/your/dockerfile/directory"
     }
     
-       
+    stages {
         stage('Build Docker Image') {
             steps {
-                script {
-                    echo 'Building Docker image'
-                    sh "docker build -t ${APP_REPO_NAME}:latest ${DOCKERFILE_DIR}"
-                    sh 'docker image ls'
-                }
+                echo 'Building Docker image'
+                sh "docker build -t $ECR_REGISTRY/microservice:latest $DOCKERFILE_DIR"
             }
         }
         
-        stage('Push Image to ECR Repo') {
+        stage('Push Image to ECR') {
             steps {
-                script {
-                    echo 'Pushing Docker image to ECR'
-                    sh 'aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin "$ECR_REGISTRY"'
-                    sh "docker tag ${APP_REPO_NAME}:latest ${ECR_REGISTRY}/${APP_REPO_NAME}:latest"
-                    sh "docker push ${ECR_REGISTRY}/${APP_REPO_NAME}:latest"
-                }
-            }
-        }
-        
-        stage('Create Infrastructure') {
-            steps {
-                echo 'Creating infrastructure using Terraform'
-                dir('infrastructure') {
-                    sh '''
-                        sed -i "s/clarus/$ANS_KEYPAIR/g" main.tf
-                        terraform init
-                        terraform apply -auto-approve -no-color
-                    '''
-                }
+                echo 'Pushing Docker image to ECR'
+                sh "docker push $ECR_REGISTRY/microservice:latest"
             }
         }
         
         stage('Deploy to Kubernetes') {
             steps {
-                script {
-                    echo 'Deploying to Kubernetes'
-                    withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
-                        sh 'kubectl apply -f deployment.yml'
-                        sh 'kubectl apply -f service.yml'
-                    }
-                }
+                echo 'Deploying to Kubernetes'
+                sh 'kubectl apply -f deployment.yaml'
+                sh 'kubectl apply -f service.yaml'
             }
         }
         
-        stage('Configure HPA') {
+        stage('Setup Horizontal Pod Autoscaler') {
             steps {
-                script {
-                    echo 'Configuring HPA'
-                    withEnv(["KUBECONFIG=${KUBECONFIG}"]) {
-                        sh 'kubectl apply -f hpa-web.yaml'
-                    }
-                }
-            }
-        }
-        
-        stage('Destroy Infrastructure') {
-            steps {
-                echo 'Destroying infrastructure using Terraform'
-                dir('infrastructure') {
-                    sh 'terraform destroy -auto-approve -no-color'
-                }
+                echo 'Setting up Horizontal Pod Autoscaler'
+                sh 'kubectl apply -f hpa.yaml'
             }
         }
     }
