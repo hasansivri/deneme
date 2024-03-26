@@ -12,7 +12,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image'
-                    sh 'docker build --force-rm -t "$ECR_REGISTRY/$APP_REPO_NAME:latest" .'
+                    sh 'docker build --force-rm -t "${ECR_REGISTRY}/${APP_REPO_NAME}:latest" .'
                     sh 'docker image ls'
                 }
             }
